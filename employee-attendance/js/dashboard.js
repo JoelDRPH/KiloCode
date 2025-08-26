@@ -196,6 +196,14 @@ document.addEventListener('DOMContentLoaded', function() {
         cancelBtn.addEventListener('click', hideLeaveModal);
         leaveForm.addEventListener('submit', handleLeaveRequest);
         
+        // Half Day checkbox functionality
+        const halfDayCheckbox = document.getElementById('half-day-checkbox');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        
+        halfDayCheckbox.addEventListener('change', handleHalfDayToggle);
+        startDateInput.addEventListener('change', handleStartDateChange);
+        
         // Logout button
         document.getElementById('logout-btn').addEventListener('click', () => {
             handleLogout();
@@ -670,14 +678,19 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handleLeaveRequest(e) {
         e.preventDefault();
         
-        const formData = new FormData(e.target);
+        const halfDayCheckbox = document.getElementById('half-day-checkbox');
+        const excludedDate1 = document.getElementById('excluded-date-1').value;
+        const excludedDate2 = document.getElementById('excluded-date-2').value;
+        
         const leaveData = {
             employeeId: currentUser.id,
             employeeName: `${currentUser.firstName} ${currentUser.lastName}`,
             leaveType: document.getElementById('leave-type').value,
             startDate: document.getElementById('start-date').value,
             endDate: document.getElementById('end-date').value,
-            reason: document.getElementById('leave-reason').value
+            reason: document.getElementById('leave-reason').value,
+            isHalfDay: halfDayCheckbox.checked,
+            excludedDates: [excludedDate1, excludedDate2].filter(date => date !== '')
         };
         
         // Validate dates
@@ -687,6 +700,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (endDate < startDate) {
             showNotification('End date cannot be before start date', 'error');
             return;
+        }
+        
+        // Validate excluded dates are within the leave period
+        for (const excludedDate of leaveData.excludedDates) {
+            const exDate = new Date(excludedDate);
+            if (exDate < startDate || exDate > endDate) {
+                showNotification('Excluded dates must be within the leave period', 'error');
+                return;
+            }
         }
         
         try {
@@ -704,6 +726,37 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Leave request error:', error);
             showNotification('Failed to submit leave request', 'error');
+        }
+    }
+
+    // Half Day checkbox handlers
+    function handleHalfDayToggle() {
+        const halfDayCheckbox = document.getElementById('half-day-checkbox');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        
+        if (halfDayCheckbox.checked) {
+            // Lock End Date field and copy Start Date value
+            endDateInput.disabled = true;
+            endDateInput.value = startDateInput.value;
+            endDateInput.style.backgroundColor = '#f5f5f5';
+            endDateInput.style.color = '#666';
+        } else {
+            // Unlock End Date field
+            endDateInput.disabled = false;
+            endDateInput.style.backgroundColor = '';
+            endDateInput.style.color = '';
+        }
+    }
+    
+    function handleStartDateChange() {
+        const halfDayCheckbox = document.getElementById('half-day-checkbox');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        
+        // If Half Day is checked, copy Start Date to End Date
+        if (halfDayCheckbox.checked) {
+            endDateInput.value = startDateInput.value;
         }
     }
 

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Leave Request Modal</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div style="padding: 20px;">
+        <h1>Leave Request Modal Test</h1>
+        <button id="show-modal-btn" class="btn btn-primary">Show Leave Request Modal</button>
+    </div>
+
+    <!-- Leave Request Modal -->
+    <div id="leave-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Request Leave</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="leave-form" class="modal-body">
+                <div class="form-group">
+                    <label for="leave-type">Leave Type</label>
+                    <select id="leave-type" required>
+                        <option value="">Select leave type</option>
+                        <option value="annual">Annual Leave</option>
+                        <option value="sick">Sick Leave</option>
+                        <option value="emergency">Emergency Leave</option>
+                        <option value="maternity">Maternity Leave</option>
+                        <option value="paternity">Paternity Leave</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="half-day-checkbox">
+                        <span class="checkmark"></span>
+                        Half Day
+                    </label>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start-date">Start Date</label>
+                        <input type="date" id="start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">End Date</label>
+                        <input type="date" id="end-date" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="excluded-date-1">Excluded Date 1</label>
+                        <input type="date" id="excluded-date-1">
+                    </div>
+                    <div class="form-group">
+                        <label for="excluded-date-2">Excluded Date 2</label>
+                        <input type="date" id="excluded-date-2">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="leave-reason">Reason</label>
+                    <textarea id="leave-reason" rows="4" placeholder="Please provide reason for leave request" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-leave-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const showModalBtn = document.getElementById('show-modal-btn');
+            const leaveModal = document.getElementById('leave-modal');
+            const closeModal = leaveModal.querySelector('.close');
+            const cancelBtn = document.getElementById('cancel-leave-btn');
+            const leaveForm = document.getElementById('leave-form');
+            
+            // Half Day checkbox functionality
+            const halfDayCheckbox = document.getElementById('half-day-checkbox');
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+            
+            // Show modal
+            showModalBtn.addEventListener('click', function() {
+                leaveModal.style.display = 'block';
+                
+                // Set minimum date to tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                startDateInput.min = tomorrow.toISOString().split('T')[0];
+                endDateInput.min = tomorrow.toISOString().split('T')[0];
+            });
+            
+            // Hide modal
+            function hideModal() {
+                leaveModal.style.display = 'none';
+                leaveForm.reset();
+                // Reset end date field styling
+                endDateInput.disabled = false;
+                endDateInput.style.backgroundColor = '';
+                endDateInput.style.color = '';
+            }
+            
+            closeModal.addEventListener('click', hideModal);
+            cancelBtn.addEventListener('click', hideModal);
+            
+            // Half Day checkbox handler
+            halfDayCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Lock End Date field and copy Start Date value
+                    endDateInput.disabled = true;
+                    endDateInput.value = startDateInput.value;
+                    endDateInput.style.backgroundColor = '#f5f5f5';
+                    endDateInput.style.color = '#666';
+                } else {
+                    // Unlock End Date field
+                    endDateInput.disabled = false;
+                    endDateInput.style.backgroundColor = '';
+                    endDateInput.style.color = '';
+                }
+            });
+            
+            // Start Date change handler
+            startDateInput.addEventListener('change', function() {
+                // Update end date minimum
+                endDateInput.min = this.value;
+                
+                // If Half Day is checked, copy Start Date to End Date
+                if (halfDayCheckbox.checked) {
+                    endDateInput.value = this.value;
+                }
+            });
+            
+            // Form submission handler
+            leaveForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const excludedDate1 = document.getElementById('excluded-date-1').value;
+                const excludedDate2 = document.getElementById('excluded-date-2').value;
+                
+                const leaveData = {
+                    leaveType: document.getElementById('leave-type').value,
+                    startDate: startDateInput.value,
+                    endDate: endDateInput.value,
+                    reason: document.getElementById('leave-reason').value,
+                    isHalfDay: halfDayCheckbox.checked,
+                    excludedDates: [excludedDate1, excludedDate2].filter(date => date !== '')
+                };
+                
+                // Validate dates
+                const startDate = new Date(leaveData.startDate);
+                const endDate = new Date(leaveData.endDate);
+                
+                if (endDate < startDate) {
+                    alert('End date cannot be before start date');
+                    return;
+                }
+                
+                // Validate excluded dates are within the leave period
+                for (const excludedDate of leaveData.excludedDates) {
+                    const exDate = new Date(excludedDate);
+                    if (exDate < startDate || exDate > endDate) {
+                        alert('Excluded dates must be within the leave period');
+                        return;
+                    }
+                }
+                
+                console.log('Leave Request Data:', leaveData);
+                alert('Leave request submitted successfully!\nCheck console for details.');
+                hideModal();
+            });
+            
+            // Close modal when clicking outside
+            leaveModal.addEventListener('click', function(e) {
+                if (e.target === leaveModal) {
+                    hideModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
