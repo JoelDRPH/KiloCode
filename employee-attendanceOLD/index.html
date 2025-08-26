@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Attendance System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="login-header">
+                <h1><i class="fas fa-clock"></i> Employee Attendance</h1>
+                <p>Secure facial recognition attendance system</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="login-form-section">
+                    <div class="form-group">
+                        <input type="text" id="employeeId" placeholder="Employee ID" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button id="loginBtn" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </div>
+                
+                <div class="face-capture-section" id="faceSection" style="display: none;">
+                    <div class="camera-container">
+                        <video id="video" autoplay muted></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <div class="camera-overlay">
+                            <div class="face-outline"></div>
+                        </div>
+                    </div>
+                    <button id="captureBtn" class="capture-btn">
+                        <i class="fas fa-camera"></i> Capture Face
+                    </button>
+                    <button id="proceedBtn" class="proceed-btn" style="display: none;">
+                        <i class="fas fa-arrow-right"></i> Proceed to Dashboard
+                    </button>
+                </div>
+                
+                <div class="admin-link" style="display: none;">
+                    <a href="admin.html"><i class="fas fa-cog"></i> Admin Panel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/database.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

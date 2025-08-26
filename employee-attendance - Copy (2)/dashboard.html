@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard - Attendance System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-clock"></i> Employee Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="employee-name">Loading...</span>
+                    <span id="employee-id" class="employee-id"></span>
+                </div>
+                <button id="logout-btn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+        
+        <main class="dashboard-main">
+            <div class="dashboard-grid">
+                <!-- Time Clock Section -->
+                <div class="clock-section">
+                    <div class="current-time">
+                        <div class="time-display">
+                            <span id="current-time">00:00:00</span>
+                            <span id="current-date">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="clock-actions">
+                        <div class="status-indicator">
+                            <span id="clock-status" class="status-out">Clocked Out</span>
+                        </div>
+                        
+                        <div class="clock-buttons">
+                            <button id="time-in-btn" class="clock-btn time-in">
+                                <i class="fas fa-play"></i>
+                                <span>Time In</span>
+                            </button>
+                            <button id="time-out-btn" class="clock-btn time-out" disabled>
+                                <i class="fas fa-stop"></i>
+                                <span>Time Out</span>
+                            </button>
+                        </div>
+                        
+                        <div class="face-capture-mini">
+                            <video id="mini-video" autoplay muted style="display: none;"></video>
+                            <canvas id="mini-canvas" style="display: none;"></canvas>
+                            <div id="capture-status" class="capture-status">
+                                <i class="fas fa-camera"></i>
+                                <span>Face verification required</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Today's Summary -->
+                <div class="summary-section">
+                    <h3><i class="fas fa-calendar-day"></i> Today's Summary</h3>
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-info">
+                                <span class="card-value" id="time-in-today">--:--</span>
+                                <span class="card-label">Time In</span>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-info">
+                                <span class="card-value" id="time-out-today">--:--</span>
+                                <span class="card-label">Time Out</span>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="card-info">
+                                <span class="card-value" id="hours-worked">0.0h</span>
+                                <span class="card-label">Hours Worked</span>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <div class="card-info">
+                                <span class="card-value" id="overtime-hours">0.0h</span>
+                                <span class="card-label">Overtime</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Schedule Information -->
+                <div class="schedule-section">
+                    <h3><i class="fas fa-calendar-alt"></i> My Schedule</h3>
+                    <div class="schedule-info">
+                        <div class="schedule-item">
+                            <span class="schedule-label">Schedule Type:</span>
+                            <span id="schedule-type" class="schedule-value">Loading...</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-label">Working Hours:</span>
+                            <span id="working-hours" class="schedule-value">Loading...</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-label">Days Off:</span>
+                            <span id="days-off" class="schedule-value">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="weekly-schedule">
+                        <h4>This Week</h4>
+                        <div class="week-days">
+                            <div class="day-item" data-day="monday">
+                                <span class="day-name">Mon</span>
+                                <span class="day-status">Work</span>
+                                <span class="day-hours">8:00-17:00</span>
+                            </div>
+                            <div class="day-item" data-day="tuesday">
+                                <span class="day-name">Tue</span>
+                                <span class="day-status">Work</span>
+                                <span class="day-hours">8:00-17:00</span>
+                            </div>
+                            <div class="day-item" data-day="wednesday">
+                                <span class="day-name">Wed</span>
+                                <span class="day-status">Work</span>
+                                <span class="day-hours">8:00-17:00</span>
+                            </div>
+                            <div class="day-item" data-day="thursday">
+                                <span class="day-name">Thu</span>
+                                <span class="day-status">Work</span>
+                                <span class="day-hours">8:00-17:00</span>
+                            </div>
+                            <div class="day-item" data-day="friday">
+                                <span class="day-name">Fri</span>
+                                <span class="day-status">Work</span>
+                                <span class="day-hours">8:00-17:00</span>
+                            </div>
+                            <div class="day-item off" data-day="saturday">
+                                <span class="day-name">Sat</span>
+                                <span class="day-status">Off</span>
+                                <span class="day-hours">--</span>
+                            </div>
+                            <div class="day-item off" data-day="sunday">
+                                <span class="day-name">Sun</span>
+                                <span class="day-status">Off</span>
+                                <span class="day-hours">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Attendance -->
+                <div class="attendance-section">
+                    <h3><i class="fas fa-history"></i> Recent Attendance</h3>
+                    <div class="attendance-list" id="recent-attendance">
+                        <!-- Recent attendance records will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Leave Management -->
+                <div class="leave-section">
+                    <h3><i class="fas fa-calendar-times"></i> Leave Management</h3>
+                    <div class="leave-summary">
+                        <div class="leave-balance">
+                            <div class="balance-item">
+                                <span class="balance-label">Annual Leave</span>
+                                <span class="balance-value" id="annual-leave">15 days</span>
+                            </div>
+                            <div class="balance-item">
+                                <span class="balance-label">Sick Leave</span>
+                                <span class="balance-value" id="sick-leave">10 days</span>
+                            </div>
+                            <div class="balance-item">
+                                <span class="balance-label">Emergency Leave</span>
+                                <span class="balance-value" id="emergency-leave">5 days</span>
+                            </div>
+                        </div>
+                        <button id="request-leave-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Request Leave
+                        </button>
+                    </div>
+                    
+                    <div class="leave-requests" id="leave-requests">
+                        <!-- Leave requests will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Leave Request Modal -->
+    <div id="leave-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Request Leave</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="leave-form" class="modal-body">
+                <div class="form-group">
+                    <label for="leave-type">Leave Type</label>
+                    <select id="leave-type" required>
+                        <option value="">Select leave type</option>
+                        <option value="annual">Annual Leave</option>
+                        <option value="sick">Sick Leave</option>
+                        <option value="emergency">Emergency Leave</option>
+                        <option value="maternity">Maternity Leave</option>
+                        <option value="paternity">Paternity Leave</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start-date">Start Date</label>
+                        <input type="date" id="start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">End Date</label>
+                        <input type="date" id="end-date" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="leave-reason">Reason</label>
+                    <textarea id="leave-reason" rows="4" placeholder="Please provide reason for leave request" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-leave-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Face Capture Modal for Time In/Out -->
+    <div id="face-capture-modal" class="modal">
+        <div class="modal-content face-capture-content">
+            <div class="modal-header">
+                <h3 id="face-capture-title">Face Verification Required</h3>
+                <span class="close" id="close-face-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="face-capture-section">
+                    <div class="camera-container">
+                        <video id="face-video" autoplay muted></video>
+                        <canvas id="face-canvas" style="display: none;"></canvas>
+                        <div class="camera-overlay">
+                            <div class="face-outline"></div>
+                        </div>
+                    </div>
+                    <div class="capture-controls">
+                        <div id="face-capture-status" class="capture-status">
+                            <i class="fas fa-camera"></i>
+                            <span>Position your face in the camera</span>
+                        </div>
+                        <div class="capture-instructions">
+                            <p>Face capture will begin automatically when camera is ready</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-face-capture">Cancel</button>
+                <button type="button" class="btn btn-success" id="proceed-with-action">
+                    <i class="fas fa-clock"></i> <span id="action-text">Time In</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/database.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
